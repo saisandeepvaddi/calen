@@ -4,10 +4,12 @@ const { google } = require("googleapis");
 const chalk = require("chalk");
 const opn = require("opn");
 const credentials = require("./credentials");
+const Conf = require("conf");
+
+const config = new Conf();
 
 // Scopes for GOOGLE APIs
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-const TOKEN_PATH = "token.json";
 
 const getAccessToken = async oAuth2Client => {
   return new Promise((resolve, reject) => {
@@ -41,10 +43,8 @@ const getAccessToken = async oAuth2Client => {
         if (err) return reject(err);
         oAuth2Client.setCredentials(token);
         // Store the token to disk for later program executions
-        fs.writeFile(TOKEN_PATH, JSON.stringify(token), err => {
-          if (err) reject(err);
-          resolve(oAuth2Client);
-        });
+        config.set("calen-token", token);
+        resolve(oAuth2Client);
       });
     });
   });
@@ -61,16 +61,14 @@ const authorize = async () => {
       );
 
       // Check if we have previously stored a token.
-      fs.readFile(TOKEN_PATH, "utf8", async (err, token) => {
-        let newToken = token ? JSON.parse(token) : null;
-        if (err || !newToken) {
-          const newOAuthClient = await getAccessToken(oAuth2Client);
-          resolve(newOAuthClient);
-        } else {
-          oAuth2Client.setCredentials(newToken);
-          resolve(oAuth2Client);
-        }
-      });
+      if (config.has("calen-token")) {
+        let token = config.get("calen-token");
+        oAuth2Client.setCredentials(token);
+        resolve(oAuth2Client);
+      } else {
+        const newOAuthClient = await getAccessToken(oAuth2Client);
+        resolve(newOAuthClient);
+      }
     });
   } catch (error) {
     console.log(error);

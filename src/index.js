@@ -9,7 +9,9 @@ const Table = require("cli-table3");
 const dayjs = require("dayjs");
 const chalk = require("chalk");
 const chrono = require("chrono-node");
-const TOKEN_PATH = "token.json";
+const Conf = require("conf");
+
+const config = new Conf();
 
 const eventSpinner = ora(chalk.green(`Fetching Calender..`));
 
@@ -92,7 +94,7 @@ const calen = async () => {
   try {
     // authSpinner.start();
     if (cli.flags.new) {
-      fs.unlinkSync(TOKEN_PATH);
+      config.delete("calen-token");
     }
 
     const auth = await utils.authorize();
