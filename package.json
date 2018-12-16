@@ -24,6 +24,9 @@
   ],
   "author": "Sai Sandeep Vaddi",
   "license": "MIT",
+  "files": [
+    "src"
+  ],
   "bugs": {
     "url": "https://github.com/saisandeepvaddi/calen/issues"
   },
