@@ -3,18 +3,11 @@ const readline = require("readline");
 const { google } = require("googleapis");
 const chalk = require("chalk");
 const opn = require("opn");
+const credentials = require("./credentials");
 
 // Scopes for GOOGLE APIs
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
 const TOKEN_PATH = "token.json";
-
-const readCredentials = async () => {
-  return new Promise((resolve, reject) => {
-    fs.readFile("credentials.json", (err, content) => {
-      return err ? reject(err) : resolve(content);
-    });
-  });
-};
 
 const getAccessToken = async oAuth2Client => {
   return new Promise((resolve, reject) => {
@@ -50,8 +43,6 @@ const getAccessToken = async oAuth2Client => {
         // Store the token to disk for later program executions
         fs.writeFile(TOKEN_PATH, JSON.stringify(token), err => {
           if (err) reject(err);
-          // console.log("Token stored to", TOKEN_PATH);
-          // spinners.authSpinner.succeed();
           resolve(oAuth2Client);
         });
       });
@@ -62,8 +53,6 @@ const getAccessToken = async oAuth2Client => {
 const authorize = async () => {
   try {
     return new Promise(async (resolve, reject) => {
-      const credentialString = await readCredentials();
-      const credentials = JSON.parse(credentialString);
       const { client_secret, client_id, redirect_uris } = credentials.installed;
       const oAuth2Client = new google.auth.OAuth2(
         client_id,

@@ -43,6 +43,12 @@ You can check the `--help` argument for available commands
 
 ```
 
+# Developers
+
+Please get your own credentials for Google Calender API and replace in [credentials.js](/src/credentials.js) file. Google documentation link is given in the same file.
+
+PRs are welcomed.
+
 # Thanks
 
 Thanks to the maintainers and contributors of the following packages.
