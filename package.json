@@ -1,0 +1,38 @@
+{
+  "name": "calen",
+  "version": "1.0.0",
+  "description": "CLI for checking your Google calender",
+  "main": "src/index.js",
+  "bin": {
+    "calen": "src/index.js"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saisandeepvaddi/calen.git"
+  },
+  "keywords": [
+    "calender",
+    "google",
+    "cal",
+    "cli"
+  ],
+  "author": "Sai Sandeep Vaddi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saisandeepvaddi/calen/issues"
+  },
+  "homepage": "https://github.com/saisandeepvaddi/calen#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "googleapis": "^27.0.0",
+    "meow": "^5.0.0",
+    "opn": "^5.4.0",
+    "ora": "^3.0.0"
+  }
+}
