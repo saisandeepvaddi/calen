@@ -32,10 +32,11 @@ const getAccessToken = async oAuth2Client => {
     );
 
     console.log(
-      chalk.cyan("Go to the following URL if browser doesn't open already:")
+      chalk.cyan("Go to the following URL if your browser didn't open already:")
     );
 
     console.log(`${chalk.bold.underline.green(authUrl)}`);
+
     console.log("\n");
 
     opn(authUrl);
@@ -52,7 +53,7 @@ const getAccessToken = async oAuth2Client => {
         // Store the token to disk for later program executions
         fs.writeFile(TOKEN_PATH, JSON.stringify(token), err => {
           if (err) reject(err);
-          console.log("Token stored to", TOKEN_PATH);
+          // console.log("Token stored to", TOKEN_PATH);
           // spinners.authSpinner.succeed();
           resolve(oAuth2Client);
         });
@@ -75,13 +76,15 @@ const authorize = async () => {
 
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, "utf8", async (err, token) => {
-        let newToken = JSON.parse(token);
-        if (err || !token) {
-          newToken = await getAccessToken(oAuth2Client);
+        // console.log("token: ", token);
+        let newToken = token ? JSON.parse(token) : null;
+        if (err || !newToken) {
+          const newOAuthClient = await getAccessToken(oAuth2Client);
+          resolve(newOAuthClient);
+        } else {
+          oAuth2Client.setCredentials(newToken);
+          resolve(oAuth2Client);
         }
-
-        oAuth2Client.setCredentials(newToken);
-        resolve(oAuth2Client);
       });
     });
   } catch (error) {

@@ -22,16 +22,17 @@ const listEvents = async auth => {
           spinners.eventSpinner.fail(`Fetching calender events failed`);
           reject(err);
         }
-        const events = res.data.items;
-        spinners.eventSpinner.succeed();
-        resolve(events);
+        if (res) {
+          const events = res.data.items;
+          spinners.eventSpinner.succeed();
+          resolve(events);
+        }
       }
     );
   });
 };
 
 const displayEvents = events => {
-  console.log(events);
   events.map(event => {
     console.log(event.summary);
   });
