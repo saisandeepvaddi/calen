@@ -1,16 +1,13 @@
 const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
-const spinners = require("./spinners");
 const chalk = require("chalk");
 const opn = require("opn");
+
 // Scopes for GOOGLE APIs
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
 const TOKEN_PATH = "token.json";
 
-/**
- * Read credentials for Google API application. App developer (only developer)'s JOB.
- */
 const readCredentials = async () => {
   return new Promise((resolve, reject) => {
     fs.readFile("credentials.json", (err, content) => {
@@ -76,7 +73,6 @@ const authorize = async () => {
 
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, "utf8", async (err, token) => {
-        // console.log("token: ", token);
         let newToken = token ? JSON.parse(token) : null;
         if (err || !newToken) {
           const newOAuthClient = await getAccessToken(oAuth2Client);

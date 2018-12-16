@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 "use strict";
+const fs = require("fs");
 const cli = require("./cli");
 const utils = require("./utils");
 const { google } = require("googleapis");
 const ora = require("ora");
-const spinners = require("./spinners");
 const Table = require("cli-table3");
 const dayjs = require("dayjs");
 const chalk = require("chalk");
 const chrono = require("chrono-node");
+const TOKEN_PATH = "token.json";
+
+const eventSpinner = ora(chalk.green(`Fetching Calender..`));
 
 const listEvents = async auth => {
   return new Promise((resolve, reject) => {
@@ -16,8 +19,9 @@ const listEvents = async auth => {
       const calendar = google.calendar({ version: "v3", auth });
       const inputs = cli.input;
       const flags = cli.flags;
-      const parsedDate = inputs[0]
-        ? chrono.parseDate(inputs[0].replace(/[-_]/i, " "))
+      const inputString = inputs.length ? inputs.join(" ") : "";
+      const parsedDate = inputString
+        ? chrono.parseDate(inputString.replace(/[-_]/i, " "))
         : null;
 
       const timeMin =
@@ -37,18 +41,18 @@ const listEvents = async auth => {
         },
         (err, res) => {
           if (err) {
-            spinners.eventSpinner.fail(`Fetching calender events failed`);
+            eventSpinner.fail(`Fetching calender events failed`);
             reject(err);
           }
           if (res) {
             const events = res.data.items;
-            spinners.eventSpinner.succeed("Here's your calender");
+            eventSpinner.succeed("Here's your calender");
             resolve(events);
           }
         }
       );
     } catch (error) {
-      spinners.eventSpinner.fail(`Fetching calender events failed.`);
+      eventSpinner.fail(`Fetching calender events failed.`);
       chalk.red(error);
     }
   });
@@ -69,11 +73,15 @@ const displayEvents = events => {
     const startTime = new Date(event.start.dateTime);
     const endTime = new Date(event.end.dateTime);
     table.push([
-      chalk.bold.greenBright(event.summary),
-      startTime.toLocaleDateString() + " " + startTime.toLocaleTimeString(),
-      endTime.toLocaleDateString() + " " + endTime.toLocaleTimeString(),
-      dayjs(endTime).diff(dayjs(startTime), "hour", true) + " hrs",
-      chalk.underline.yellow(event.location)
+      chalk.bold.greenBright(event.summary) || "N/A",
+      startTime.toLocaleDateString() + " " + startTime.toLocaleTimeString() ||
+        "N/A",
+      endTime.toLocaleDateString() + " " + endTime.toLocaleTimeString() ||
+        "N/A",
+      dayjs(endTime)
+        .diff(dayjs(startTime), "hour", true)
+        .toFixed(2) + " hrs" || "N/A",
+      chalk.underline.yellow(event.location || "N/A")
     ]);
   });
 
@@ -82,11 +90,15 @@ const displayEvents = events => {
 
 const calen = async () => {
   try {
-    // spinners.authSpinner.start();
+    // authSpinner.start();
+    if (cli.flags.new) {
+      fs.unlinkSync(TOKEN_PATH);
+    }
+
     const auth = await utils.authorize();
 
     // console.log("auth: ", auth);
-    spinners.eventSpinner.start();
+    eventSpinner.start();
     const events = await listEvents(auth);
     displayEvents(events);
   } catch (error) {

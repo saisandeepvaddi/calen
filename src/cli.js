@@ -3,23 +3,27 @@ const meow = require("meow");
 const cli = meow(
   `
   Usage
-    $ calen               -- default is events starting today
-    $ calen today
-    $ calen tomorrow
-    $ calen today tomorrow
+    $ calen                             -- (Default) Events starting today
+    $ calen [start time of events]      -- See examples below
+    $ calen today                       -- Calender from today
+    $ calen tomorrow                    -- Calender from tomorrow
+    $ calen last week                   -- calender since last week
+    $ calen 2 hrs from now              -- calender starting from 2 hrs from now
     $ calen -c 10
   
   Options
-	  --date, -d          Give starting date (default: Today)
-    --count, -c         Number of calender events to show
+    --count, -c         Number of calender events to show (Default 10)
     --new, -n           Remove auth tokens and re-launch authorization process (Use this to login to a different Google account)
 
   Example
     $ calen
-    2018-11-23T18:35:00-05:00 - Flight to Paris (AF 55)
-    2018-11-24T04:20:00-05:00 - Flight to Bengaluru (AF 194)
-    2018-12-22T15:25:00-05:00 - Flight to Paris (AF 191)
-    2018-12-23T07:40:00-05:00 - Flight to Washington, D.C. (AF 54)
+    ┌────────────────────────────────────┬───────────────────────┬────────────────────────┬───────────────────────┬───────────────┐
+    │ Event                              │ Start                 │ End                    │ Duration              │ Location      │
+    ├────────────────────────────────────┼───────────────────────┼────────────────────────┼───────────────────────┼───────────────┤
+    │ Meeting with Client                │ 12/23/2018 1:55:00 AM │ 12/23/2018 2:55 :00 PM │ 2.00 hrs              │ Bengaluru BLR │
+    ├────────────────────────────────────┼───────────────────────┼────────────────────────┼───────────────────────┼───────────────┤
+    │ Flight to Washington, D.C          │ 12/23/2018 6:10:00 PM │ 12/24/2018 3:00:00 AM  │ 8.833333333333334 hrs │ Washington IAD│
+    └────────────────────────────────────┴───────────────────────┴────────────────────────┴───────────────────────┴───────────────┘
 `,
   {
     flags: {
