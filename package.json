@@ -1,6 +1,6 @@
 {
   "name": "calen",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI for checking your Google calender",
   "main": "src/index.js",
   "bin": {
