@@ -7,11 +7,12 @@ const cli = meow(
     $ calen today
     $ calen tomorrow
     $ calen today tomorrow
-    $ calen -n 10
+    $ calen -c 10
   
   Options
 	  --date, -d          Give starting date (default: Today)
-	  --number, -n        Number of calender events to show
+    --count, -c         Number of calender events to show
+    --new, -n           Remove auth tokens and re-launch authorization process (Use this to login to a different Google account)
 
   Example
     $ calen
@@ -27,10 +28,15 @@ const cli = meow(
         alias: "d",
         default: "today"
       },
-      number: {
-        type: "number",
+      count: {
+        type: "string",
+        alias: "c",
+        default: "10"
+      },
+      new: {
+        type: "boolean",
         alias: "n",
-        default: 10
+        default: false
       }
     }
   }
