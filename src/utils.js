@@ -9,7 +9,7 @@ const Conf = require("conf");
 const config = new Conf();
 
 // Scopes for GOOGLE APIs
-const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
 const getAccessToken = async oAuth2Client => {
   return new Promise((resolve, reject) => {

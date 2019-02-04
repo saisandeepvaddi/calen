@@ -12,6 +12,7 @@ const cli = meow(
     $ calen -c 10
   
   Options
+    --add, -a           Add new event to calender
     --count, -c         Number of calender events to show (Default 10)
     --new, -n           Remove auth tokens and re-launch authorization process (Use this to login to a different Google account)
 
@@ -27,6 +28,11 @@ const cli = meow(
 `,
   {
     flags: {
+      add: {
+        type: "boolean",
+        alias: "a",
+        default: false
+      },
       date: {
         type: "string",
         alias: "d",

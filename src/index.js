@@ -10,7 +10,7 @@ const dayjs = require("dayjs");
 const chalk = require("chalk");
 const chrono = require("chrono-node");
 const Conf = require("conf");
-
+const inquirer = require('inquirer');
 const config = new Conf();
 
 const eventSpinner = ora(chalk.green(`Fetching Calender..`));
@@ -29,8 +29,8 @@ const listEvents = async auth => {
       const timeMin =
         parsedDate !== null
           ? dayjs(parsedDate)
-              .startOf("day")
-              .toISOString()
+            .startOf("day")
+            .toISOString()
           : dayjs().toISOString();
 
       calendar.events.list(
@@ -60,6 +60,28 @@ const listEvents = async auth => {
   });
 };
 
+const addEvent = async (auth, event) => {
+  try {
+    const calendar = google.calendar({ version: "v3", auth });
+    calendar.events.insert(
+      {
+        auth: auth,
+        calendarId: 'primary',
+        resource: event
+      },
+      (err, resultEvent) => {
+        if (err) {
+          eventSpinner.fail('There was an error contacting the Calendar service: ' + err);
+        } else {
+          eventSpinner.succeed('Event created: %s', resultEvent.htmlLink);
+        }
+      });
+  } catch (error) {
+    eventSpinner.fail(`Adding calender event failed.`);
+    chalk.red(error);
+  }
+}
+
 const displayEvents = events => {
   const makeBrightYellow = str => chalk.bold.yellowBright(str);
   const table = new Table({
@@ -77,9 +99,9 @@ const displayEvents = events => {
     table.push([
       chalk.bold.greenBright(event.summary) || "N/A",
       startTime.toLocaleDateString() + " " + startTime.toLocaleTimeString() ||
-        "N/A",
+      "N/A",
       endTime.toLocaleDateString() + " " + endTime.toLocaleTimeString() ||
-        "N/A",
+      "N/A",
       dayjs(endTime)
         .diff(dayjs(startTime), "hour", true)
         .toFixed(2) + " hrs" || "N/A",
@@ -96,13 +118,57 @@ const calen = async () => {
     if (cli.flags.new) {
       config.delete("calen-token");
     }
-
     const auth = await utils.authorize();
-
     // console.log("auth: ", auth);
-    eventSpinner.start();
-    const events = await listEvents(auth);
-    displayEvents(events);
+
+    if (cli.flags.add) {
+      const questions = [
+        {
+          type: 'input',
+          name: 'summary',
+          message: 'Event Summary: '
+        },
+        {
+          type: 'input',
+          name: 'location',
+          message: 'Location: '
+        },
+        {
+          type: 'input',
+          name: 'description',
+          message: 'Description: '
+        },
+        {
+          type: 'input',
+          name: 'start',
+          message: 'Start Date (seperate days month and year with - Then T before specifying time and finally + or - timezone) \n Example: 2015-05-28T09:00:00-07:00 \n'
+        },
+        {
+          type: 'input',
+          name: 'end',
+          message: 'End Date (seperate days month and year with - Then T before specifying time and finally + or - timezone) \n Example: 2015-05-28T09:00:00-07:00 \n'
+        }
+      ];
+      inquirer.prompt(questions).then(answers => {
+        const e = {
+          'summary': answers.summary,
+          'location': answers.location,
+          'description': answers.description,
+          'start': {
+            'dateTime': answers.start
+          },
+          'end': {
+            'dateTime': answers.end
+          }
+        }
+        addEvent(auth, e);
+      });
+    } else {
+      eventSpinner.start();
+      const events = await listEvents(auth);
+      displayEvents(events);
+    }
+
   } catch (error) {
     console.log(error);
   }
